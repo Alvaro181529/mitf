@@ -1,0 +1,6 @@
+server
+*.log
+.git
+.gitignore
+.system_generated
+tmp

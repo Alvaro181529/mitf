@@ -1,0 +1,18 @@
+2026/09/24 17:16:04 [CONFIG] Servidor SSH configurado: server@192.168.122.79:22 | Ruta remota de logs: /home/server/log
+2026/09/24 17:16:04 [CONFIG] Base de datos PostgreSQL: postgres@localhost:5432/mitfv2_db (sslmode=disable)
+2026/09/24 17:16:04 [CONFIG] Configuración SSH actualizada en tiempo real: server@192.168.122.79:22 | Ruta: /home/server/log
+2026/09/24 17:16:04 [DB SUCCESS] Conexión y tablas de PostgreSQL verificadas exitosamente
+2026/09/24 17:16:04 ==========================================================
+2026/09/24 17:16:04  Backend MITFV2 Multi-Server iniciado en http://localhost:8080
+2026/09/24 17:16:04  API Health:           http://localhost:8080/api/health?server_id=1
+2026/09/24 17:16:04  API CRUD Configs:     http://localhost:8080/api/v1/configs
+2026/09/24 17:16:04  API Active Config:    http://localhost:8080/api/v1/configs/active
+2026/09/24 17:16:04  API Hardware Summary: http://localhost:8080/api/v1/hardware/summary?server_id=1
+2026/09/24 17:16:04  API Interactive Map:  http://localhost:8080/api/v1/hardware/interactive-map?server_id=1
+2026/09/24 17:16:04  API Tube Health:      http://localhost:8080/api/v1/hardware/tube-health?server_id=1
+2026/09/24 17:16:04  API Gantry Stats:     http://localhost:8080/api/v1/hardware/gantry-stats?server_id=1
+2026/09/24 17:16:04  API TSM Alerts:       http://localhost:8080/api/v1/alerts/events?server_id=1&severity=2
+2026/09/24 17:16:04  API ATREC Tickets:    http://localhost:8080/api/v1/atrec/tickets
+2026/09/24 17:16:04  API Logs (Filtros):   http://localhost:8080/api/logs?server_id=1&severity=3
+2026/09/24 17:16:04  Servidor Linux Base:  server@192.168.122.79:22
+2026/09/24 17:16:04 ==========================================================

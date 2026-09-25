@@ -1,0 +1,70 @@
+services:
+  # =========================================================================
+  # Backend: API Go MITFV2 (SSH Linux Log Reader & Parser GE CT99)
+  # =========================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: mitfv2-backend:latest
+    container_name: mitfv2-backend
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      - SERVER_PORT=:8080
+      - SSH_HOST=192.168.122.79
+      - SSH_PORT=22
+      - SSH_USER=server
+      - SSH_PASSWORD=server
+      - REMOTE_LOG_PATH=/home/server/log
+      - DB_HOST=localhost
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=mitfv2_db
+      - DB_SSLMODE=disable
+    env_file:
+      - path: ./backend/.env
+        required: false
+
+  # =========================================================================
+  # Frontend: Panel Web Next.js 16 + Tailwind CSS (App Router & Telemetría)
+  # =========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8080
+    image: mitfv2-frontend:latest
+    container_name: mitfv2-frontend
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    depends_on:
+      - backend
+
+  # =========================================================================
+  # Base de Datos Opcional: PostgreSQL (Activar solo si el host no tiene Postgres)
+  # Para iniciar con este servicio: docker compose --profile with-db up -d
+  # =========================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: mitfv2-postgres
+    profiles:
+      - with-db
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=mitfv2_db
+    volumes:
+      - mitfv2_pgdata:/var/lib/postgresql/data
+
+volumes:
+  mitfv2_pgdata:
+    driver: local
