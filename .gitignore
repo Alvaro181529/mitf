@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.*
+
+# Testing
+/coverage
+
+# Next.js build
+.next/
+out/
+build/
+
+# Binaries & logs
+backend/server
+*.log
+backend/*.log
+
+# Environment variables
+.env.local
+.env.*.local
+*.pem
+
+# OS & misc
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
+next-env.d.ts
