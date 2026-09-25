@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"mitfv2/config"
@@ -36,6 +37,11 @@ type DBRepository struct {
 // NewDBRepository crea un nuevo repositorio de base de datos.
 func NewDBRepository(db *sql.DB) *DBRepository {
 	return &DBRepository{db: db}
+}
+
+// GetDB retorna la instancia subyacente de *sql.DB.
+func (r *DBRepository) GetDB() *sql.DB {
+	return r.db
 }
 
 // InitDB inicializa la conexión con PostgreSQL, ejecuta las migraciones y siembra los valores iniciales.
@@ -74,7 +80,7 @@ func InitDB() (*DBRepository, error) {
 	return repo, nil
 }
 
-// migrate asegura que la tabla server_configs exista en la base de datos.
+// migrate asegura que las tablas server_configs y atrec_tickets existan en PostgreSQL.
 func (r *DBRepository) migrate() error {
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -103,6 +109,24 @@ func (r *DBRepository) migrate() error {
 		updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 	);
 	CREATE INDEX IF NOT EXISTS idx_server_configs_is_active ON server_configs(is_active);
+
+	CREATE TABLE IF NOT EXISTS atrec_tickets (
+		ticket_id VARCHAR(50) PRIMARY KEY,
+		created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+		updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+		tsm_subsystem_id INTEGER NOT NULL,
+		severity VARCHAR(50) NOT NULL,
+		source_error_code VARCHAR(100) DEFAULT '',
+		description TEXT NOT NULL,
+		assigned_technician VARCHAR(200) NOT NULL,
+		status VARCHAR(50) NOT NULL DEFAULT 'OPEN',
+		z_alignment_passed BOOLEAN NOT NULL DEFAULT false,
+		phantom_iq_passed BOOLEAN NOT NULL DEFAULT false,
+		detector_flatfield_calibrated BOOLEAN NOT NULL DEFAULT false,
+		qa_sign_off_by VARCHAR(200) DEFAULT '',
+		resolution_type VARCHAR(100) DEFAULT ''
+	);
+	CREATE INDEX IF NOT EXISTS idx_atrec_tickets_status ON atrec_tickets(status);
 	`
 	if _, err := tx.Exec(query); err != nil {
 		return err
@@ -201,7 +225,7 @@ func (r *DBRepository) GetByID(id int64) (*ServerConfig, error) {
 	return &c, nil
 }
 
-// GetActive retorna la configuración actualmente marcada como activa (is_active = true).
+// GetActive retorna la configuración que se encuentra actualmente activa.
 func (r *DBRepository) GetActive() (*ServerConfig, error) {
 	var c ServerConfig
 	query := `
